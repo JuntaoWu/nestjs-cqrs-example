@@ -1,0 +1,6 @@
+{
+    "type": "mysql",
+    "synchronize": true,
+    "logging": true,
+    "entities": ["dist/**/*.entity{.ts,.js}"]
+  }
