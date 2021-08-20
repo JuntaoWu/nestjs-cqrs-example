@@ -10,7 +10,9 @@ export class PersonService {
 
   constructor(
     @InjectRepository(Person)
-    private personRepository: Repository<Person>) {
+    private personRepository: Repository<Person>,
+    // private readonly commandBus: CommandBus,
+  ) {
 
   }
 
@@ -23,15 +25,20 @@ export class PersonService {
     return this.personRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.personRepository.findOne(id);
   }
 
-  update(id: number, updatePersonDto: UpdatePersonDto) {
-    return this.personRepository.update({id, deletedDate: null}, updatePersonDto);
+  update(id: string, updatePersonDto: UpdatePersonDto) {
+    return this.personRepository.update({ id, deletedDate: null }, updatePersonDto);
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.personRepository.softDelete(id);
   }
+
+  // async promote(promoteCommand: PromoteCommand) {
+  //   await this.commandBus.execute(promoteCommand);
+  // }
+
 }
