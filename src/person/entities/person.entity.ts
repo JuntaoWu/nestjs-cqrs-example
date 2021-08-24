@@ -1,4 +1,4 @@
-import { AggregateRoot } from "@nestjs/cqrs";
+import { AggregateRoot, EventsHandler } from "@nestjs/cqrs";
 import { randomUUID } from "crypto";
 import { SalaryStandard } from "src/salary-standard/entities/salary-standard.entity";
 import { Column, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, Repository } from "typeorm";
@@ -6,11 +6,14 @@ import { PromotedEvent } from "../domain/promote/promote.event";
 import { Exclude } from 'class-transformer';
 import { InitializePersonCommand } from "../domain/initialize/initialize-person.command";
 import { PersonInitializedEvent } from "../domain/initialize/person-initialized.event";
+import { TargetAggregateIdentifier } from "src/services/target-aggregate-identifier";
+import { EventSourcingHandler } from "src/services/event-sourcing-handler";
 
 @Entity("person")
 /** DDD concept AggregateRoot */
 export class Person extends AggregateRoot {
 
+    @TargetAggregateIdentifier()
     @PrimaryColumn()
     id: string;
 
@@ -55,4 +58,17 @@ export class Person extends AggregateRoot {
         this.apply(promotedEvent);
         /** cqrs code ended. */
     }
+
+    /** !!!note that only named "onEventName" will be auto called. */
+    @EventSourcingHandler()
+    onPersonInitializedEvent(event: PersonInitializedEvent) {
+        console.log('onPersonInitializedEvent');
+    }
+
+    /** !!!note that only named "onEventName" will be auto called. */
+    @EventSourcingHandler()
+    onPromotedEvent(event: PromotedEvent) {
+        console.log('onPromotedEvent');
+    }
 }
+

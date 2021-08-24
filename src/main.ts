@@ -1,11 +1,15 @@
+// must be config first.
+require('dotenv').config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as dotenv from 'dotenv';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { connect as connectToEventStore } from './services/event-store';
 
 async function bootstrap() {
-  dotenv.config();
+
   const app = await NestFactory.create(AppModule);
+
+  await connectToEventStore();
 
   const config = new DocumentBuilder()
     .setTitle('Hero example')

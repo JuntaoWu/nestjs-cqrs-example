@@ -10,7 +10,8 @@ import { SalaryStandard } from 'src/salary-standard/entities/salary-standard.ent
 import { CqrsModule } from '@nestjs/cqrs';
 import { PersonSnapshotModule } from 'src/person-snapshot/person-snapshot.module';
 import { PersonInitializedEventHandler } from './event-handlers/initialized-event.handler';
-import { InitializePersonCommandHandler } from './domain/initialize/initialize-person-command.handler';
+import { Initialize } from './domain/initialize';
+import { Promote } from './domain/promote';
 
 @Module({
   imports: [
@@ -21,9 +22,9 @@ import { InitializePersonCommandHandler } from './domain/initialize/initialize-p
   controllers: [PersonController],
   providers: [
     PersonService,
-    PromoteCommandHandler,
+    ...Promote,
     PromotedEventHandler,
-    InitializePersonCommandHandler,
+    ...Initialize,
     PersonInitializedEventHandler,
   ]
 })
