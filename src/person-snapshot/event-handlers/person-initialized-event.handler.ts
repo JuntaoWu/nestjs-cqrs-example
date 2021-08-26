@@ -13,6 +13,8 @@ export class PersonInitializedEventHandler implements IEventHandler<PersonInitia
 
     }
 
+    // todo:
+    // should handle revert event also.
     async handle(event: PersonInitializedEvent) {
         const newPersonSnapshot = this.repository.create(event);
         newPersonSnapshot.id = event.transactionId;

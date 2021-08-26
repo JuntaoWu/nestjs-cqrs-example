@@ -8,6 +8,8 @@ import { Person } from "../entities/person.entity";
 export class PersonInitializedEventHandler implements IEventHandler<PersonInitializedEvent> {
     constructor(@InjectRepository(Person) private repository: Repository<Person>) { }
 
+    // todo:
+    // should handle revert event also.
     async handle(event: PersonInitializedEvent) {
         const person = this.repository.create(event);
         person.id = event.personId;

@@ -13,6 +13,8 @@ export class PromotedEventHandler implements IEventHandler<PromotedEvent> {
 
     }
 
+    // todo:
+    // should handle revert event also.
     async handle(event: PromotedEvent) {
         const latestPersonSnapshot = await this.repository.findOne({ personId: event.personId, id: Not(event.transactionId) }, {
             order: {

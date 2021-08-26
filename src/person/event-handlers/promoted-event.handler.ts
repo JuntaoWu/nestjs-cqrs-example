@@ -8,6 +8,8 @@ import { Person } from "../entities/person.entity";
 export class PromotedEventHandler implements IEventHandler<PromotedEvent> {
     constructor(@InjectRepository(Person) private repository: Repository<Person>) { }
 
+    // todo:
+    // should handle revert event also.
     async handle(event: PromotedEvent) {
         const person = await this.repository.findOne(event.personId);
         person.salaryGrade += event.plusGrade;
