@@ -23,12 +23,6 @@ export class PersonAggregate extends AggregateRoot {
 
     salaryTotal: number;
 
-    get name() {
-        return `${this.firstname} ${this.lastname}`;
-    }
-
-    deletedDate: Date;
-
     async initialize(command: InitializePersonCommand) {
         const initializedEvent = new PersonInitializedEvent(randomUUID(), command.personId, command.firstname, command.lastname);
         this.apply(initializedEvent);

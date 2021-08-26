@@ -3,21 +3,22 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SalaryStandard } from "salary-standard/entities/salary-standard.entity";
 import { Repository } from "typeorm";
 import { PromoteCommand } from "./promote.command";
-import { Person } from "../../entities/person.entity";
+// import { Person } from "../../entities/person.entity";
 import { PersonSnapshotService } from "person-snapshot/person-snapshot.service";
 import { AggregateRepository } from "services/aggregate.repository";
+import { PersonAggregate } from "../person.aggregate";
 
 @CommandHandler(PromoteCommand)
 export class PromoteCommandHandler implements ICommandHandler<PromoteCommand> {
 
     constructor(
-        @InjectRepository(Person)
-        private personRepository: Repository<Person>,
+        // @InjectRepository(Person)
+        // private personRepository: Repository<Person>,
         @InjectRepository(SalaryStandard)
         private salaryStandardRepository: Repository<SalaryStandard>,
         private publisher: EventPublisher,
         private personSnapshotService: PersonSnapshotService,
-        private readonly personAggregateRepository: AggregateRepository<Person>,
+        private readonly personAggregateRepository: AggregateRepository<PersonAggregate>,
     ) {
 
     }
@@ -25,10 +26,14 @@ export class PromoteCommandHandler implements ICommandHandler<PromoteCommand> {
     async execute(command: PromoteCommand): Promise<any> {
         /** validation logic for this command. */
 
-        const personAggregate: Person = await this.personAggregateRepository.load(command.personId, Person);
-
         /** execution of command handling. */
-        const person = this.publisher.mergeObjectContext(await this.personRepository.findOne(command.personId));
+        const person: PersonAggregate = this.publisher.mergeObjectContext(
+            await this.personAggregateRepository.load(command.personId, PersonAggregate)
+        );
+
+        // const person = this.publisher.mergeObjectContext(
+        //     await this.personRepository.findOne(command.personId)
+        // );
 
         await person.promote(this.salaryStandardRepository);
 

@@ -15,7 +15,7 @@ export class AggregateRepository<T> {
         return this.loadOrCreate(id, constructor);
     }
 
-    public async loadOrCreate(id: any, constructor: Constructor<T>): Promise<T> {
+    private async loadOrCreate(id: any, constructor: Constructor<T>): Promise<T> {
         const stream = eventStore.readStream(id, {
             direction: FORWARDS
         });

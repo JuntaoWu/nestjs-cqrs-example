@@ -10,10 +10,10 @@ import { EventSourcingHandler } from "services/event-sourcing-handler";
 import { AggregateIdentifier } from "services/aggregate-identifier";
 
 @Entity("person")
-/** DDD concept AggregateRoot */
-export class Person extends AggregateRoot {
+/** DDD concept AggregateRoot migrated to PersonAggregate already */
+export class Person {
 
-    @AggregateIdentifier()
+    // @AggregateIdentifier()
     @PrimaryColumn()
     id: string;
 
@@ -37,38 +37,38 @@ export class Person extends AggregateRoot {
     @DeleteDateColumn()
     deletedDate: Date;
 
-    async initialize(command: InitializePersonCommand) {
-        Object.assign(this, command);
+    // async initialize(command: InitializePersonCommand) {
+    //     Object.assign(this, command);
 
-        const initializedEvent = new PersonInitializedEvent(randomUUID(), command.personId, command.firstname, command.lastname);
-        this.apply(initializedEvent);
-    }
+    //     const initializedEvent = new PersonInitializedEvent(randomUUID(), command.personId, command.firstname, command.lastname);
+    //     this.apply(initializedEvent);
+    // }
 
-    async promote(salaryStandardRepository: Repository<SalaryStandard>) {
+    // async promote(salaryStandardRepository: Repository<SalaryStandard>) {
 
-        /** traditional way to handle domain logic */
-        // this.salaryGrade += 1;
-        // const salaryStandard = await salaryStandardRepository.findOne({ salaryGrade: this.salaryGrade });
-        // this.salaryTotal = salaryStandard.amount;
+    //     /** traditional way to handle domain logic */
+    //     // this.salaryGrade += 1;
+    //     // const salaryStandard = await salaryStandardRepository.findOne({ salaryGrade: this.salaryGrade });
+    //     // this.salaryTotal = salaryStandard.amount;
 
-        /** cqrs code begin */
-        const previousAmount = this.salaryTotal;
-        const salaryStandard = await salaryStandardRepository.findOne({ salaryGrade: this.salaryGrade + 1 });
-        const promotedEvent = new PromotedEvent(randomUUID(), this.id, 1, previousAmount, salaryStandard.amount);
-        this.apply(promotedEvent);
-        /** cqrs code ended. */
-    }
+    //     /** cqrs code begin */
+    //     const previousAmount = this.salaryTotal;
+    //     const salaryStandard = await salaryStandardRepository.findOne({ salaryGrade: this.salaryGrade + 1 });
+    //     const promotedEvent = new PromotedEvent(randomUUID(), this.id, 1, previousAmount, salaryStandard.amount);
+    //     this.apply(promotedEvent);
+    //     /** cqrs code ended. */
+    // }
 
-    /** !!!note that only named "onEventName" will be auto called. */
-    @EventSourcingHandler()
-    onPersonInitializedEvent(event: PersonInitializedEvent) {
-        console.log('onPersonInitializedEvent');
-    }
+    // /** !!!note that only named "onEventName" will be auto called. */
+    // @EventSourcingHandler()
+    // onPersonInitializedEvent(event: PersonInitializedEvent) {
+    //     console.log('onPersonInitializedEvent');
+    // }
 
-    /** !!!note that only named "onEventName" will be auto called. */
-    @EventSourcingHandler()
-    onPromotedEvent(event: PromotedEvent) {
-        console.log('onPromotedEvent');
-    }
+    // /** !!!note that only named "onEventName" will be auto called. */
+    // @EventSourcingHandler()
+    // onPromotedEvent(event: PromotedEvent) {
+    //     console.log('onPromotedEvent');
+    // }
 }
 
