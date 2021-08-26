@@ -6,6 +6,7 @@ import { PromoteCommand } from './domain/promote/promote.command';
 import { CommandBus } from '@nestjs/cqrs';
 import { InitializePersonCommand } from './domain/initialize/initialize-person.command';
 import { randomUUID } from 'crypto';
+import { RevertPersonCommand } from './domain/revertPerson/revert-person.command';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('person')
@@ -51,6 +52,11 @@ export class PersonController {
   promote(@Param('id') id: string) {
     return this.commandBus.execute(new PromoteCommand(id));
     // return this.personService.promote(new PromoteCommand(+id));
+  }
+
+  @Post(':id/revert/:personSnapshotId')
+  revert(@Param('id') id: string, @Param(':personSnapshotId') personSnapshotId: string) {
+    return this.commandBus.execute(new RevertPersonCommand(id, personSnapshotId));
   }
 
 }

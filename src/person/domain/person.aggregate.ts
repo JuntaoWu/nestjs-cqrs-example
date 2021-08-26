@@ -1,4 +1,4 @@
-import { AggregateRoot, EventsHandler } from "@nestjs/cqrs";
+import { AggregateRoot, EventsHandler, IEvent } from "@nestjs/cqrs";
 import { randomUUID } from "crypto";
 import { SalaryStandard } from "salary-standard/entities/salary-standard.entity";
 import { Column, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, Repository } from "typeorm";
@@ -8,6 +8,8 @@ import { InitializePersonCommand } from "../domain/initialize/initialize-person.
 import { PersonInitializedEvent } from "../domain/initialize/person-initialized.event";
 import { EventSourcingHandler } from "services/event-sourcing-handler";
 import { AggregateIdentifier } from "services/aggregate-identifier";
+import { EventType } from "@eventstore/db-client";
+import { PromoteRevertedEvent } from "./promote/promote.revert.event";
 
 /** DDD concept AggregateRoot */
 export class PersonAggregate extends AggregateRoot {
@@ -43,6 +45,20 @@ export class PersonAggregate extends AggregateRoot {
         /** cqrs code ended. */
     }
 
+    revertPromotedEvent(event: PromotedEvent) {
+        const previousAmount = this.salaryTotal;
+        const promoteRevertedEvent = new PromoteRevertedEvent(randomUUID(), this.id, -1, previousAmount, event.previousAmount);
+        this.apply(promoteRevertedEvent);
+    }
+
+    // revert(personSnapshotId: string, event: EventType) {
+    //     switch (event?.type) {
+    //         case 'PromotedEvent':
+    //             this.revertPromotedEvent(event.data as any);
+    //             break;
+    //     }
+    // }
+
     /** !!!note that only named "onEventName" will be auto called. */
     @EventSourcingHandler()
     onPersonInitializedEvent(event: PersonInitializedEvent) {
@@ -54,6 +70,13 @@ export class PersonAggregate extends AggregateRoot {
     @EventSourcingHandler()
     onPromotedEvent(event: PromotedEvent) {
         console.log('onPromotedEvent');
+        this.salaryGrade += event.plusGrade;
+        this.salaryTotal = event.targetAmount;
+    }
+
+    @EventSourcingHandler()
+    onPromoteRevertedEvent(event: PromoteRevertedEvent) {
+        console.log('onPromoteRevertedEvent');
         this.salaryGrade += event.plusGrade;
         this.salaryTotal = event.targetAmount;
     }

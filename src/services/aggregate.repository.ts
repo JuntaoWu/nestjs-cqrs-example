@@ -1,6 +1,7 @@
 
-import { FORWARDS } from '@eventstore/db-client';
+import { EventType, FORWARDS, ResolvedEvent, StreamingRead } from '@eventstore/db-client';
 import { Injectable } from '@nestjs/common';
+import { IEvent } from '@nestjs/cqrs';
 import { client as eventStore } from 'services/event-store';
 
 type Constructor<T extends {} = {}> = new (...args: any[]) => T;
@@ -15,10 +16,24 @@ export class AggregateRepository<T> {
         return this.loadOrCreate(id, constructor);
     }
 
-    private async loadOrCreate(id: any, constructor: Constructor<T>): Promise<T> {
+    public loadEvents(id: any): StreamingRead<ResolvedEvent<EventType>> {
         const stream = eventStore.readStream(id, {
             direction: FORWARDS
         });
+        return stream;
+    }
+
+    public async eventStream(id: any): Promise<EventType[]> {
+        const stream = this.loadEvents(id);
+        const result = [];
+        for await (const { event } of stream) {
+            result.push(event);
+        }
+        return result;
+    }
+
+    private async loadOrCreate(id: any, constructor: Constructor<T>): Promise<T> {
+        const stream = this.loadEvents(id);
         const result = new constructor();
         const methods: any[] = Reflect.getMetadata(Symbol.for('EventSourcingHandler'), result);
 
