@@ -7,6 +7,7 @@ import { PersonModule } from './person/person.module';
 import { PersonSnapshotModule } from './person-snapshot/person-snapshot.module';
 import { SalaryStandardModule } from './salary-standard/salary-standard.module';
 import { CqrsModule } from '@nestjs/cqrs';
+import { AggregateRepository } from 'services/aggregate.repository';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { CqrsModule } from '@nestjs/cqrs';
       }
     }), PersonModule, PersonSnapshotModule, SalaryStandardModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AggregateRepository],
 })
 export class AppModule { }

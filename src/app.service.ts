@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { FORWARDS, START } from '@eventstore/db-client';
 import { Injectable } from '@nestjs/common';
 import { IEvent } from '@nestjs/cqrs';

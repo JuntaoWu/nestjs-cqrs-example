@@ -1,6 +1,6 @@
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { InjectRepository } from "@nestjs/typeorm";
-import { PromotedEvent } from "src/person/domain/promote/promote.event";
+import { PromotedEvent } from "person/domain/promote/promote.event";
 import { Not, Repository } from "typeorm";
 import { PersonSnapshot } from "../entities/person-snapshot.entity";
 

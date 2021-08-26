@@ -1,17 +1,18 @@
 
 import "reflect-metadata";
 const metadataKey = Symbol("TargetAggregateIdentifier");
-export function TargetAggregateIdentifier()  {
-    return registerProperty;
+export function TargetAggregateIdentifier() {
+  return registerProperty;
 }
 
 function registerProperty(target: object, propertyKey: string): void {
-    let properties: string[] = Reflect.getMetadata(metadataKey, target);
-  
-    if (properties) {
-      properties.push(propertyKey);
-    } else {
-      properties = [propertyKey];
-      Reflect.defineMetadata(metadataKey, properties, target);
-    }
+  const uniqueMetadataKey = Symbol.for(metadataKey.description);
+  let properties: string[] = Reflect.getMetadata(uniqueMetadataKey, target);
+
+  if (properties) {
+    properties.push(propertyKey);
+  } else {
+    properties = [propertyKey];
+    Reflect.defineMetadata(uniqueMetadataKey, properties, target);
   }
+}

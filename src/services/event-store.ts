@@ -1,8 +1,7 @@
 import { EventStoreDBClient, FORWARDS, START } from "@eventstore/db-client";
 
-const client = EventStoreDBClient.connectionString(
-    process.env.EVENT_STORE
-);
+const connectionString = process.env.EVENT_STORE || 'esdb://localhost:2113?tls=false';
+const client = EventStoreDBClient.connectionString(connectionString);
 
 const connect = async () => {
 

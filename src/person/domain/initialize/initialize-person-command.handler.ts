@@ -1,10 +1,11 @@
 import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 import { InjectRepository } from "@nestjs/typeorm";
-import { SalaryStandard } from "src/salary-standard/entities/salary-standard.entity";
+import { SalaryStandard } from "salary-standard/entities/salary-standard.entity";
 import { Repository } from "typeorm";
 import { Person } from "../../entities/person.entity";
 import { InitializePersonCommand } from "./initialize-person.command";
 import { PersonService } from "../../person.service";
+import { AggregateRepository } from "services/aggregate.repository";
 
 @CommandHandler(InitializePersonCommand)
 export class InitializePersonCommandHandler implements ICommandHandler<InitializePersonCommand> {
@@ -14,6 +15,7 @@ export class InitializePersonCommandHandler implements ICommandHandler<Initializ
         // private personRepository: Repository<Person>,
         private publisher: EventPublisher,
         // private personService: PersonService,
+        private readonly personAggregateRepository: AggregateRepository<Person>
     ) {
 
     }
@@ -22,7 +24,9 @@ export class InitializePersonCommandHandler implements ICommandHandler<Initializ
         /** validation logic for this command. */
 
         /** execution of command handling. */
-        const person = this.publisher.mergeObjectContext(new Person());
+        const personAggregate = await this.personAggregateRepository.load(command.personId, Person);
+        // const person = this.publisher.mergeObjectContext(new Person());
+        const person = this.publisher.mergeObjectContext(personAggregate);
 
         await person.initialize(command);
 

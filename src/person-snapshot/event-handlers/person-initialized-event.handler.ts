@@ -1,6 +1,6 @@
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { InjectRepository } from "@nestjs/typeorm";
-import { PersonInitializedEvent } from "src/person/domain/initialize/person-initialized.event";
+import { PersonInitializedEvent } from "person/domain/initialize/person-initialized.event";
 import { Not, Repository } from "typeorm";
 import { PersonSnapshot } from "../entities/person-snapshot.entity";
 

@@ -9,37 +9,27 @@ import { PersonInitializedEvent } from "../domain/initialize/person-initialized.
 import { EventSourcingHandler } from "services/event-sourcing-handler";
 import { AggregateIdentifier } from "services/aggregate-identifier";
 
-@Entity("person")
 /** DDD concept AggregateRoot */
-export class Person extends AggregateRoot {
+export class PersonAggregate extends AggregateRoot {
 
     @AggregateIdentifier()
-    @PrimaryColumn()
     id: string;
 
-    @Column()
     firstname: string;
 
-    @Column()
     lastname: string;
 
-    @Column({ type: 'integer', default: 1 })
     salaryGrade: number;
 
-    @Column({ type: 'decimal', default: 0 })
     salaryTotal: number;
 
     get name() {
         return `${this.firstname} ${this.lastname}`;
     }
 
-    @Exclude()
-    @DeleteDateColumn()
     deletedDate: Date;
 
     async initialize(command: InitializePersonCommand) {
-        Object.assign(this, command);
-
         const initializedEvent = new PersonInitializedEvent(randomUUID(), command.personId, command.firstname, command.lastname);
         this.apply(initializedEvent);
     }
@@ -63,12 +53,15 @@ export class Person extends AggregateRoot {
     @EventSourcingHandler()
     onPersonInitializedEvent(event: PersonInitializedEvent) {
         console.log('onPersonInitializedEvent');
+        Object.assign(this, event);
     }
 
     /** !!!note that only named "onEventName" will be auto called. */
     @EventSourcingHandler()
     onPromotedEvent(event: PromotedEvent) {
         console.log('onPromotedEvent');
+        this.salaryGrade += event.plusGrade;
+        this.salaryTotal = event.targetAmount;
     }
 }
 
